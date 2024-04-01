@@ -10,7 +10,7 @@ class Game
   end
 
   def play_round
-   puts "Played Round"
+   @board.display
   end
 
 end

@@ -1,6 +1,7 @@
 require_relative './game'
 require_relative './player'
 require_relative './board'
+require_relative './pieces'
 
 # Handles overall game flow and interactions
 class Chess
@@ -8,19 +9,17 @@ class Chess
       greeting
       player1_name = get_name(1)
       player2_name = get_name(2)
-      game = Game.new(player1_name, player2_name)
-      game.play_round
+      start_round(player1_name, player2_name)
       while play_again?
          player1_name, player2_name = swap_names(player1_name, player2_name)
-         game = Game.new(player1_name, player2_name)
          new_game_msg
-         game.play_round
+         start_round(player1_name, player2_name)
       end
       end_message
    end
 
     def greeting
-      puts "\nWelcome to Connect Four!\n"
+      puts "\nWelcome to Chess\n"
     end
   
     def swap_names(name1, name2)
@@ -58,5 +57,10 @@ class Chess
   
     def new_game_msg
       puts "\nNew Game!\n"
+    end
+
+    def start_round(player1_name, player2_name)
+      game = Game.new(player1_name, player2_name)
+      game.play_round
     end
 end
