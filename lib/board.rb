@@ -14,13 +14,19 @@ class Board
    puts '+---' * 8 + '+'
 
    # Display game board
-   @game_board.each do |row|
+   @game_board.each_with_index do |row,i|
      print '|'
-     row.each do |cell|
-       if cell == ' '
-         print " #{cell} |"
+     row.each_with_index do |cell,j|
+      if (i + j).even?
+         print "\e[47m"
+      else
+         print "\e[100m"
+      end 
+
+      if cell == ' '
+         print " #{cell} \e[0m|"
        else
-         print " #{cell} |"
+         print " #{cell} \e[0m|"
        end
      end
      puts "\n+" + '---+' * 8
