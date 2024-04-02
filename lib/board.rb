@@ -53,14 +53,14 @@ class Board
    end
   end
 
-  def display
+  def display(color)
    puts "\nCurrent Board State:\n\n"
    # Display top border
    puts ' '+'+---' * 8 + '+'
  
    # Display game board
    @game_board.each_with_index do |row, i|
-     print 8-i
+     row_coord(color,i)
      print '|'
      row.each_with_index do |cell, j|
        # Determine background color based on row and column index
@@ -82,7 +82,28 @@ class Board
      end
      puts "\n +" + '---+' * 8
    end
-   puts "   A   B   C   D   E   F   G   H"
+   col_coord(color)
+ end
+
+ def flip
+   @game_board.each {|row| row.reverse!}
+   @game_board.reverse! 
+ end
+
+ def row_coord(color,index)
+   if color=='white'
+      print 8-index
+     else
+      print index+1
+     end
+ end
+
+ def col_coord(color)
+   if color=='white'
+      puts "   A   B   C   D   E   F   G   H"
+   else
+      puts "   H   G   F   E   D   C   B   A"
+   end
  end
  
 end
