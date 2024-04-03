@@ -8,11 +8,6 @@ class Player
      @color = color
    end
 
-   #Choose an action, returns old and new location.
-   def make_move
-    [choose_old,choose_new]
-   end
-
    #Choose a piece to move, if possible.
    def choose_old
     from_where_prompt
@@ -25,6 +20,7 @@ class Player
     convert_input(get_input)
    end
 
+   #Takes input from user and check validity
    def get_input
     input=""
     until valid_input?(input)
@@ -54,7 +50,7 @@ class Player
    end
    
    def to_where_prompt
-    puts "\nPlease select where to move to.\n"
+    puts "\nPlease select where to move it to.\n"
    end
 
    def ask_input_prompt

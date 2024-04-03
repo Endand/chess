@@ -128,4 +128,8 @@ class Board
  def update(old_pos,new_pos)
   puts "Old Pos: #{old_pos} New Pos: #{new_pos}"
  end
+
+ def show_coord(row,col)
+  @game_board[row][col]
+ end
 end
