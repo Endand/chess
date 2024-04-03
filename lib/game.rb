@@ -10,22 +10,29 @@ class Game
   end
 
   def play_round
-   winner=nil
+   checkmate=nil
+   stalemate=nil
    turn=1
-   until winner
+   until checkmate || stalemate
       player = turn.odd? ? @player1 : @player2
       @board.display(player.color)
+      move_prompt(player)
       
-      ##makes a move
-      puts "#{player} made a move"
+      #makes a move
+      old_pos,new_pos=player.choose_new
+      @board.update(old_pos,new_pos)
       ##check for checkmate
 
-      @board.flip
       turn+=1
 
       #test purpose
-      winner=true if turn==3
+      checkmate=true if turn==3
    end
+   
+  end
+
+  def move_prompt(player)
+    puts "\n#{player.name} your turn.\n"
   end
 
 end

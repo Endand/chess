@@ -9,16 +9,19 @@ class Board
     chess_pieces_init
   end
 
+  #Fill board with pieces on their starting pos
   def chess_pieces_init
    piece_place('white')
    piece_place('black')
   end
   
+  #Fill one side of the board with pieces
   def piece_place(color)
    pawn_place(color)
    special_piece_place(color)
   end
 
+  #Init back row pieces positions
   def special_piece_place(color)
    if color=='white'
       @game_board[7][0] = WHITE_ROOK
@@ -41,6 +44,7 @@ class Board
    end
   end
 
+  #Init pawn positions
   def pawn_place(color)
    if color=='white'
       8.times do |i|
@@ -53,43 +57,55 @@ class Board
    end
   end
 
+  #Shows current board status
   def display(color)
+   puts "\n------------------------------------------"
    puts "\nCurrent Board State:\n\n"
    # Display top border
-   puts ' '+'+---' * 8 + '+'
- 
+   
+   show_board(color)
    # Display game board
-   @game_board.each_with_index do |row, i|
-     row_coord(color,i)
-     print '|'
-     row.each_with_index do |cell, j|
-       # Determine background color based on row and column index
-       if (i + j).even?
-         print "\e[47m"  # White background
-       else
-         print "\e[100m" # Grey background
-       end
- 
-       # Print cell content
-       if cell == ' '
-         print " #{cell} "
-       else
-         print " #{cell} "
-       end
-       
-       # Reset background color immediately after printing
-       print "\e[0m|"
-     end
-     puts "\n +" + '---+' * 8
-   end
+   
    col_coord(color)
  end
 
- def flip
-   @game_board.each {|row| row.reverse!}
-   @game_board.reverse! 
+ def show_board(color)
+
+  board_to_display = (color=='white') ? @game_board : flipped_board
+  puts ' '+'+---' * 8 + '+'
+  board_to_display.each_with_index do |row, i|
+    row_coord(color,i)
+    print '|'
+    row.each_with_index do |cell, j|
+      # Determine background color based on row and column index
+      if (i + j).even?
+        print "\e[47m"  # White background
+      else
+        print "\e[100m" # Grey background
+      end
+
+      # Print cell content
+      if cell == ' '
+        print " #{cell} "
+      else
+        print " #{cell} "
+      end
+      
+      # Reset background color immediately after printing
+      print "\e[0m|"
+    end
+    puts "\n +" + '---+' * 8
+  end
  end
 
+ #Flip the board for better view for black
+ def flipped_board
+   flipped_board= @game_board.reverse 
+   flipped_board.each {|row| row.reverse!}
+   flipped_board
+ end
+
+ #Used to determine which order to show the row num
  def row_coord(color,index)
    if color=='white'
       print 8-index
@@ -98,6 +114,7 @@ class Board
      end
  end
 
+ #Used to determine which order to show the col num
  def col_coord(color)
    if color=='white'
       puts "   A   B   C   D   E   F   G   H"
@@ -106,4 +123,8 @@ class Board
    end
  end
  
+ #Takes old and new pos from player and updates the board accordingly
+ def update(old_pos,new_pos)
+  puts "Old Pos: #{old_pos} New Pos: #{new_pos}"
+ end
 end
