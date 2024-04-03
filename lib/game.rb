@@ -14,14 +14,16 @@ class Game
    stalemate=nil
    turn=1
    until checkmate || stalemate
-      player = turn.odd? ? @player1 : @player2
+      player = which_player(turn)
       @board.display(player.color)
       move_prompt(player)
       
-      #makes a move
-      old_pos,new_pos=player.choose_new
+      #Makes a move
+      input=""
+      # until can_select(input)
+      old_pos,new_pos=player.make_move
       @board.update(old_pos,new_pos)
-      ##check for checkmate
+      ##Check for checkmate
 
       turn+=1
 
@@ -33,6 +35,10 @@ class Game
 
   def move_prompt(player)
     puts "\n#{player.name} your turn.\n"
+  end
+
+  def which_player(turn)
+    player = turn.odd? ? @player1 : @player2
   end
 
 end

@@ -57,7 +57,7 @@ class Board
    end
   end
 
-  #Shows current board status
+  #Shows board status with comments and coordinates
   def display(color)
    puts "\n------------------------------------------"
    puts "\nCurrent Board State:\n\n"
@@ -69,6 +69,7 @@ class Board
    col_coord(color)
  end
 
+ #Shows current board status according to color
  def show_board(color)
 
   board_to_display = (color=='white') ? @game_board : flipped_board
