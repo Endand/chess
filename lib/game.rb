@@ -20,8 +20,11 @@ class Game
       
       #Makes a move
       input=""
-      # until can_select(input)
-      old_pos,new_pos=player.make_move
+      # until can_select?(input)
+      #   input=player.make_move
+      # end
+      input=player.make_move
+      old_pos,new_pos=input
       @board.update(old_pos,new_pos)
       ##Check for checkmate
 
@@ -39,6 +42,10 @@ class Game
 
   def which_player(turn)
     player = turn.odd? ? @player1 : @player2
+  end
+
+  def can_select?(input)
+    
   end
 
 end

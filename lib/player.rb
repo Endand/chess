@@ -37,10 +37,16 @@ class Player
 
    #Converts player input to index of the board
    def convert_input(input)
-    letter=input[0]
-    number=input[1].to_i
+    #col
+    letter= alphabet_to_int(input[0]) - 1
+    #row
+    number= 8 - (input[1].to_i)
+    #To read as nested array coord
+    [number,letter]
+   end
 
-    [letter,number]
+   def alphabet_to_int(letter)
+    letter.downcase.ord - 'a'.ord + 1
    end
 
    def from_where_prompt
