@@ -133,15 +133,30 @@ class Game
   end
 
   def rook_path(coord)
-
+    dirs=[[0, 1], [0, -1], [1, 0], [-1, 0]]
+    path= keep_adding(coord,dirs)
   end
 
   def bishop_path(coord)
-
+    dirs=[[1, 1], [-1, -1], [1, -1], [-1, 1]]
+    path= keep_adding(coord,dirs)
   end
 
   def queen_path(coord)
-
+    path= rook_path(coord) + bishop_path(coord)
+  end
+  
+  def keep_adding(coord,dirs)
+    path=[]
+    dirs.each do |dr,dc|
+      r,c=coord
+      while in_bound?([r + dr, c + dc])
+        r += dr
+        c += dc
+        path << [r, c]
+      end
+    end
+    path
   end
 
   #Adds all possible cells to path based on the directions a piece can move
