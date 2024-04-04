@@ -91,13 +91,14 @@ class Game
     when 'knight'
       path = knight_path(from)
     when 'pawn'
-      path = pawn_path(from)
+      path = pawn_path(from,color)
     end
 
+    puts "#{path.inspect}"
     #Eliminate blocked path
     path=reject_blocked(path,color)
 
-    
+    puts "#{path.inspect}"
     #Check if input is part the candidate path
     
     #placeholder
@@ -115,8 +116,20 @@ class Game
     path
   end
 
-  def pawn_path(coord)
-    
+  def pawn_path(coord,color)
+    path=[]
+    path += add_to_path(coord,-1,0)
+    dirs=[[-1,-1],[-1,1]]
+    dirs.each do |dr,dc|
+      new_coord=get_new_coord(coord,dr,dc)
+      piece=get_piece(new_coord)
+      path += add_to_path(coord,dr,dc) if opp_color?(piece,color)
+    end
+    path
+  end
+
+  def knight_path(coord)
+
   end
 
   def rook_path(coord)
@@ -131,15 +144,16 @@ class Game
 
   end
 
-  def knight_path(coord)
-
+  #Return the coord of piece to compare
+  def get_new_coord(coord,dr,dc)
+    row,col=coord
+    new_coord=[row+dr,col+dc]
   end
 
   #Add one to possible path according to direction
   def add_to_path(coord,dr,dc)
     path=[]
-    row,col=coord
-    new_coord=[row+dr,col+dc]
+    new_coord = get_new_coord(coord,dr,dc)
     path << new_coord if in_bound?(new_coord)
     path
   end
