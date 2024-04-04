@@ -55,7 +55,7 @@ class Board
          @game_board[1][i] = BLACK_PAWN
       end
    end
-
+   @game_board[6][0] = " "
   end
 
   #Shows board status with comments and coordinates
@@ -73,7 +73,6 @@ class Board
 
  #Shows current board status according to color
  def show_board(color)
-
   board_to_display = (color=='white') ? @game_board : flipped_board
   puts ' '+'+---' * 8 + '+'
   board_to_display.each_with_index do |row, i|

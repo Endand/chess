@@ -7,6 +7,7 @@ class Game
     @board = Board.new
     @player1 = Player.new(player1_name, 'white')
     @player2 = Player.new(player2_name, 'black')
+
   end
 
   def play_round
@@ -57,11 +58,19 @@ class Game
 
   #Check if piece to move exists in the coord and is player's color.
   def can_select_old?(input,color)
+    # Ensure the input is not empty
     return false if input.empty?
+
+    # Check if the piece is empty or doesn't match the player's color
     piece=get_piece(input)
-    piece!=' ' && same_color?(piece,color)
+    return false if piece==' ' || !same_color?(piece,color)
 
     #NEED TO ADD A CHECKER FOR NO VALID MOVE CASE
+    path = get_path(input,color)
+    return false if path.empty?
+
+    # If all conditions are met, return true
+    true
   end
 
   #Asks for new pos until valid
@@ -123,6 +132,7 @@ class Game
     #Eliminate blocked path
     path=reject_blocked(path,color)
 
+    #test purpose
     puts "#{path.inspect}"
     path
   end
@@ -130,10 +140,17 @@ class Game
   #Gets all possible path a pawn can take
   def pawn_path(coord,color)
     path=[]
+    row,col=coord
     if color=="white"
+      if row==6
+        path += add_to_path(coord,-2,0)
+      end
       path += add_to_path(coord,-1,0)
       dirs=[[-1,-1],[-1,1]]
     elsif color=="black"
+      if row==1
+        path += add_to_path(coord,2,0)
+      end
       path += add_to_path(coord,1,0)
       dirs=[[1,1],[1,-1]]
     end
@@ -213,11 +230,19 @@ class Game
 
   #Reduces possible moves if the path is blocked by same colored piece
   def reject_blocked(path,color)
-    accepted=path.reject do |candidate| 
+    
+    #covers pawn,knight,king
+    accepted=no_friendly_fire(path,color)
+
+    accepted
+  end
+
+  #Gets rid of path if an ally is on it
+  def no_friendly_fire(path,color)
+    no_same_color=path.reject do |candidate| 
       piece = get_piece(candidate)
       same_color?(piece,color)
     end
-    accepted
   end
 
   #Checks if coord is within the chess board
@@ -267,7 +292,7 @@ class Game
   end
 
   def not_valid_old
-    puts "\nPlease select YOUR piece to move.\n"
+    puts "\nPlease select YOUR piece to move that could MOVE.\n"
   end
   
   def not_valid_new
