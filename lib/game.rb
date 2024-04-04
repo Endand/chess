@@ -60,6 +60,8 @@ class Game
     return false if input.empty?
     piece=get_piece(input)
     piece!=' ' && same_color?(piece,color)
+
+    #NEED TO ADD A CHECKER FOR NO VALID MOVE CASE
   end
 
   #Asks for new pos until valid
@@ -75,7 +77,7 @@ class Game
         break
       else
         not_valid_new
-        display_poss_path(path)
+        display_possible_path(path)
       end
     end
   
@@ -86,11 +88,12 @@ class Game
   def can_select_new?(path,input)
     return false if input.empty?
     
-    #Check if input is part the candidate path
+    #Checks if input is part the candidate path
     path.include?(input)
     
   end
 
+  #Gets piece type of the piece to move
   def identify_old_piece(from)
     piece = get_piece(from)
     piece_type = get_piece_type(piece)
@@ -117,7 +120,6 @@ class Game
       path = pawn_path(from,color)
     end
 
-    puts "#{path.inspect}"
     #Eliminate blocked path
     path=reject_blocked(path,color)
 
@@ -125,6 +127,7 @@ class Game
     path
   end
 
+  #Gets all possible path a pawn can take
   def pawn_path(coord,color)
     path=[]
     if color=="white"
@@ -142,30 +145,36 @@ class Game
     path
   end
 
+  #Gets all possible path a king can take
   def king_path(coord)
     dirs=[[-1,-1],[-1,0],[0,1],[-1,1]] #LD,U,R,RD
     path = add_all_dirs(coord,dirs)
   end
 
+  #Gets all possible path a knight can take
   def knight_path(coord)
     dirs=[[2,1],[2,-1],[1,2],[1,-2]] #LD,U,R,RD
     path = add_all_dirs(coord,dirs)
   end
 
+  #Gets all possible path a rook can take
   def rook_path(coord)
     dirs=[[0, 1], [0, -1], [1, 0], [-1, 0]]
     path= keep_adding(coord,dirs)
   end
 
+  #Gets all possible path a bishop can take
   def bishop_path(coord)
     dirs=[[1, 1], [-1, -1], [1, -1], [-1, 1]]
     path= keep_adding(coord,dirs)
   end
 
+  #Gets all possible path a queen can take
   def queen_path(coord)
     path= rook_path(coord) + bishop_path(coord)
   end
   
+  #Add to path until end of the board
   def keep_adding(coord,dirs)
     path=[]
     dirs.each do |dr,dc|
@@ -265,7 +274,31 @@ class Game
     puts "\nThat piece cannot move there.\n"
   end
 
-  def display_poss_path(path)
-    puts "\nHere are the options: #{path.inspect}\n"
+  def display_possible_path(path)
+    translated_path= translate_input(path)
+    puts "\nHere are the options: #{translated_path.inspect}\n"
   end
+
+  #Converts indexes to chess notation
+  def translate_input(paths)
+    result=[]
+    paths.each do |path|
+      row,col=path
+
+      
+      row=8-row
+      row= row.to_s
+
+      col = int_to_alphabet(col)
+
+      result << col+row
+    end
+    result
+  end
+
+  #Converts col num to matching letter
+  def int_to_alphabet(col)
+    ('A'.ord + col).chr
+  end
+
 end
