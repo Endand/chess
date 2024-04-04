@@ -105,17 +105,6 @@ class Game
     true
   end
 
-  
-
-  def king_path(coord)
-    path=[]
-    dirs=[[-1,-1],[-1,0],[0,1],[-1,1]] #LD,U,R,RD
-    dirs.each do |dr,dc|
-      path += add_to_path(coord,dr,dc) + add_to_path(coord,-dr,-dc)
-    end
-    path
-  end
-
   def pawn_path(coord,color)
     path=[]
     path += add_to_path(coord,-1,0)
@@ -128,8 +117,14 @@ class Game
     path
   end
 
-  def knight_path(coord)
+  def king_path(coord)
+    dirs=[[-1,-1],[-1,0],[0,1],[-1,1]] #LD,U,R,RD
+    path = add_all_dirs(coord,dirs)
+  end
 
+  def knight_path(coord)
+    dirs=[[2,1],[2,-1],[1,2],[1,-2]] #LD,U,R,RD
+    path = add_all_dirs(coord,dirs)
   end
 
   def rook_path(coord)
@@ -142,6 +137,15 @@ class Game
 
   def queen_path(coord)
 
+  end
+
+  #Adds all possible cells to path based on the directions a piece can move
+  def add_all_dirs(coord,dirs)
+    path=[]
+    dirs.each do |dr,dc|
+      path += add_to_path(coord,dr,dc) + add_to_path(coord,-dr,-dc)
+    end
+    path
   end
 
   #Return the coord of piece to compare
