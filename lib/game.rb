@@ -107,8 +107,13 @@ class Game
 
   def pawn_path(coord,color)
     path=[]
-    path += add_to_path(coord,-1,0)
-    dirs=[[-1,-1],[-1,1]]
+    if color=="white"
+      path += add_to_path(coord,-1,0)
+      dirs=[[-1,-1],[-1,1]]
+    elsif color=="black"
+      path += add_to_path(coord,1,0)
+      dirs=[[1,1],[1,-1]]
+    end
     dirs.each do |dr,dc|
       new_coord=get_new_coord(coord,dr,dc)
       piece=get_piece(new_coord)
