@@ -63,22 +63,44 @@ class Game
   end
 
   #Asks for new pos until valid
-  def get_new_input(player,from)
-    input = player.choose_new
-    until can_select_new?(from, input, player.color)
-      not_valid_new
+  def get_new_input(player, from)
+    input = nil
+    path = nil
+  
+    loop do
       input = player.choose_new
+      path = get_path(from, player.color)
+  
+      if can_select_new?(path, input)
+        break
+      else
+        not_valid_new
+        display_poss_path(path)
+      end
     end
+  
     input
   end
 
   #Checks if selected path can move to desinated input
-  def can_select_new?(from,input,color)
+  def can_select_new?(path,input)
     return false if input.empty?
+    
+    #Check if input is part the candidate path
+    path.include?(input)
+    
+  end
+
+  def identify_old_piece(from)
     piece = get_piece(from)
     piece_type = get_piece_type(piece)
-    puts "#{piece}"
-    #Get all the possible moveset possible
+  end
+
+  #Get all the possible moveset possible
+  def get_path(from,color)
+
+    piece_type= identify_old_piece(from)
+
     path=nil
     case piece_type
     when 'king'
@@ -100,10 +122,7 @@ class Game
     path=reject_blocked(path,color)
 
     puts "#{path.inspect}"
-    #Check if input is part the candidate path
-    
-    #placeholder
-    true
+    path
   end
 
   def pawn_path(coord,color)
@@ -244,5 +263,9 @@ class Game
   
   def not_valid_new
     puts "\nThat piece cannot move there.\n"
+  end
+
+  def display_poss_path(path)
+    puts "\nHere are the options: #{path.inspect}\n"
   end
 end
