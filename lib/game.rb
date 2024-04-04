@@ -77,6 +77,7 @@ class Game
     return false if input.empty?
     piece = get_piece(from)
     piece_type = get_piece_type(piece)
+    puts "#{piece}"
     #Get all the possible moveset possible
     path=nil
     case piece_type

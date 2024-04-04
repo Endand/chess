@@ -64,8 +64,9 @@ class Board
    puts "\nCurrent Board State:\n\n"
    # Display top border
    
-   show_board(color)
    # Display game board
+   show_board(color)
+   
    
    col_coord(color)
  end
@@ -102,9 +103,7 @@ class Board
 
  #Flip the board for better view for black
  def flipped_board
-   flipped_board= @game_board.reverse 
-   flipped_board.each {|row| row.reverse!}
-   flipped_board
+  @game_board.reverse.map { |row| row.reverse }
  end
 
  #Used to determine which order to show the row num
