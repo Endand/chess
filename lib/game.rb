@@ -29,7 +29,10 @@ class Game
       @board.update(old_pos,new_pos)
 
       ##Check for checkmate
-
+      
+      if check?(player.color)
+        puts "Check"
+      end
       ##Check for stalemate
 
       turn+=1
@@ -44,6 +47,24 @@ class Game
     stalemate_msg
    end
    
+  end
+
+  #See if enemy king is under an attack
+  def check?(color)
+    enemy_king= other_king_spot(color)
+    enemy_color=other_color(color) 
+    guarded?(enemy_king,enemy_color)
+  end
+
+  #Return coordinate of enemy king
+  def other_king_spot(color)
+    enemy_king = (color=='white') ? BLACK_KING : WHITE_KING
+    @board.find_coordinate(enemy_king)
+  end
+
+  #Return the opposite color
+  def other_color(color)
+    color=='white' ? 'black' : 'white'
   end
 
   #Change the pawn to select piece (in-place)

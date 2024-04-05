@@ -55,7 +55,8 @@ class Board
          @game_board[1][i] = BLACK_PAWN
       end
    end
-
+   @game_board[1][4] = " "
+   @game_board[5][4] = WHITE_ROOK
   end
 
   #Shows board status with comments and coordinates
@@ -138,5 +139,13 @@ class Board
 
  def make_change(row,col,change)
   @game_board[row][col]=change
+ end
+
+ def find_coordinate(target)
+  @game_board.each_with_index do |row, i|
+    row.each_with_index do |cell, j|
+      return [i, j] if cell == target
+    end
+  end
  end
 end
