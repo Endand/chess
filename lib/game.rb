@@ -22,6 +22,12 @@ class Game
       
       #Makes a move
       old_pos,new_pos=get_move(player)
+
+      #Check for promotion
+      promote if promote?(old_pos,new_pos,player.color)
+
+
+
       @board.update(old_pos,new_pos)
 
       ##Check for checkmate
@@ -40,6 +46,26 @@ class Game
     stalemate_msg
    end
    
+  end
+
+  #Promote the pawn
+  def promote
+    puts "promoted"
+  end
+
+  #Check the move makes the pawn promotable
+  def promote?(old_pos,new_pos,color)
+    piece=get_piece(old_pos)
+    return false if !PAWN.include?(piece)
+    
+    row,col=new_pos
+    case color
+    when 'white'
+      ready = (row==0)
+    when 'black'
+      ready = (row==7)
+    end
+    ready
   end
 
   #Determines which player's turn
@@ -316,8 +342,6 @@ class Game
     false
   end
 
-
-  
   #Reduces possible moves if the path is blocked by same colored piece
   def reject_blocked(path,color,coord)
 
@@ -330,6 +354,10 @@ class Game
     when 'rook', 'bishop', 'queen'
       accepted = remove_blocked_path(accepted, color, coord)
     end
+
+    #Pawn can't move forward no matter the color
+    piece_type = coord_to_piece_type(coord)
+    accepted=pawn_block_check(accepted,coord,color) if piece_type=='pawn'
 
     accepted
   end
@@ -388,6 +416,12 @@ class Game
       piece = get_piece(candidate)
       same_color?(piece,color)
     end
+  end
+
+  def pawn_block_check(path,coord,color)
+    r, c = coord
+    r += (color == 'white' ? -1 : 1)
+    path.reject { |spot| spot == [r, c] }
   end
 
   #Checks if coord is within the chess board
