@@ -1,3 +1,4 @@
+require_relative './pieces'
 # Handles win conditions and game logic
 
 class Game
@@ -24,12 +25,19 @@ class Game
       @board.update(old_pos,new_pos)
 
       ##Check for checkmate
+
       ##Check for stalemate
 
       turn+=1
 
       #test purpose
       checkmate=true if turn==3
+   end
+
+   if checkmate
+    checkmate_msg(player)
+   elsif stalemate
+    stalemate_msg
    end
    
   end
@@ -109,7 +117,7 @@ class Game
     path=nil
     case piece_type
     when 'king'
-      path = king_path(from)
+      path = king_path(from,color)
     when 'queen'
       path = queen_path(from)
     when 'rook'
@@ -154,9 +162,10 @@ class Game
   end
 
   #Gets all possible path a king can take
-  def king_path(coord)
+  def king_path(coord,color)
     dirs=[[-1,-1],[-1,0],[0,1],[-1,1]] #LD,U,R,RD
     path = add_all_dirs(coord,dirs)
+    path=remove_guarded(path,color)
   end
 
   #Gets all possible path a knight can take
@@ -179,7 +188,7 @@ class Game
 
   #Gets all possible path a queen can take
   def queen_path(coord)
-    path= rook_path(coord) + bishop_path(coord)
+    path = rook_path(coord) + bishop_path(coord)
   end
   
   #Add to path until end of the board
@@ -219,6 +228,64 @@ class Game
     path
   end
 
+  #Remove all the king's path that are eyed by enemy pieces
+  def remove_guarded(path,color)
+    path.reject {|spot| guarded?(spot,color)}
+  end
+
+  #Checks if a spot is guarded by enemy pieces
+  def guarded?(spot,color)
+    king_eyed?(spot,color) ||
+    pawn_eyed?(spot,color) ||
+    knight_eyed?(spot,color) ||
+    rook_eyed?(spot,color) ||
+    bishop_eyed?(spot,color)
+    #rook and bishop covers queen case
+  end
+
+  #Checks if a enemy pawn eyed over any of the path
+  def pawn_eyed?(spot,color)
+    if color=='white'
+      dirs=[[-1,-1],[-1,1]]
+    else
+      dirs=[[1,-1],[1,1]] 
+    end
+    piece_there?(dirs,spot,color,PAWN)
+  end
+
+  #Checks if a enemy king eyed over any of the path
+  def king_eyed?(spot,color)
+    dirs=[[-1,-1],[-1,0],[0,1],[-1,1],[1,1],[1,0],[0,-1],[1,-1]] 
+    piece_there?(dirs,spot,color,KING)
+  end
+
+  #Checks if a enemy knight eyed over any of the path
+  def knight_eyed?(spot,color)
+    dirs=[[1, 2], [2, 1], [-1, 2], [-2, 1], [-1, -2], [-2, -1], [1, -2], [2, -1]]
+    piece_there?(dirs,spot,color,KNIGHT)
+  end
+
+  #Checks if a enemy rook eyed over any of the path
+  def rook_eyed?(spot,color)
+    false
+  end
+
+  #Checks if a enemy bishop eyed over any of the path
+  def bishop_eyed?(spot,color)
+    false
+  end
+
+  def piece_there?(dirs,spot,color,type)
+    dirs.each do |dr,dc|
+      r,c=spot
+      eyeing_piece=@board.show_coord(r+dr,c+dc)
+      return true if !same_color?(eyeing_piece,color) && type.include?(eyeing_piece)
+    end
+    false
+  end
+
+
+  
   #Reduces possible moves if the path is blocked by same colored piece
   def reject_blocked(path,color,coord)
 
@@ -353,6 +420,14 @@ class Game
   def display_possible_path(path)
     translated_path= translate_input(path)
     puts "\nHere are the options: #{translated_path.inspect}\n"
+  end
+
+  def checkmate_msg(player)
+    puts "\nCheckmate. You win #{player.name}.\n"
+  end
+
+  def stalemate_msg
+    puts "\nStalemate. It is a tie.\n"
   end
 
   #Converts indexes to chess notation

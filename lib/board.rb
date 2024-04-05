@@ -55,7 +55,9 @@ class Board
          @game_board[1][i] = BLACK_PAWN
       end
    end
-   @game_board[2][3] = WHITE_QUEEN
+   @game_board[2][1] = BLACK_KNIGHT
+   @game_board[4][3] = WHITE_KING
+
   end
 
   #Shows board status with comments and coordinates
