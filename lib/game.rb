@@ -102,16 +102,9 @@ class Game
     
   end
 
-  #Gets piece type of the piece to move
-  def identify_old_piece(from)
-    piece = get_piece(from)
-    piece_type = get_piece_type(piece)
-  end
-
   #Get all the possible moveset possible
   def get_path(from,color)
-
-    piece_type= identify_old_piece(from)
+    piece_type = coord_to_piece_type(from)
 
     path=nil
     case piece_type
@@ -130,10 +123,8 @@ class Game
     end
 
     #Eliminate blocked path
-    path=reject_blocked(path,color)
+    path=reject_blocked(path,color,from)
 
-    #test purpose
-    puts "#{path.inspect}"
     path
   end
 
@@ -229,12 +220,67 @@ class Game
   end
 
   #Reduces possible moves if the path is blocked by same colored piece
-  def reject_blocked(path,color)
-    
-    #covers pawn,knight,king
+  def reject_blocked(path,color,coord)
+
+    #covers pawn,king,knight
     accepted=no_friendly_fire(path,color)
 
+    #covers rook,bishop,queen
+    piece_type = coord_to_piece_type(coord)
+    case piece_type
+    when 'rook', 'bishop', 'queen'
+      accepted = remove_blocked_path(accepted, color, coord)
+    end
+
     accepted
+  end
+
+  def remove_blocked_path(path,color,coord)
+    piece_type = coord_to_piece_type(coord)
+    case piece_type
+    when 'rook'
+      path=gbp_rook(coord,path)
+    when 'bishop'
+      path=gbp_bishop(coord,path)
+    when 'queen'
+      path=gbp_queen(coord,path)
+    end
+    path
+  end
+
+  def gbp_rook(coord,path)
+    dirs=[[0, 1], [0, -1], [1, 0], [-1, 0]]
+    path=get_blocked_path(dirs,coord,path)
+  end
+  
+  def gbp_bishop(coord,path)
+    dirs=[[1, 1], [-1, -1], [1, -1], [-1, 1]]
+    path=get_blocked_path(dirs,coord,path)
+  end
+
+  def gbp_queen(coord,path)
+    dirs=[[1, 1], [-1, -1], [1, -1], [-1, 1]] + [[0, 1], [0, -1], [1, 0], [-1, 0]]
+    path=get_blocked_path(dirs,coord,path)
+  end
+
+  def get_blocked_path(dirs,coord,path)
+    dirs.each do |dr,dc|
+      r,c=coord
+      blocked=false
+      while in_bound?([r + dr, c + dc])
+        r += dr
+        c += dc
+        
+        if blocked && path.include?([r,c])
+          path.delete([r,c])
+        end
+
+        if @board.show_coord(r,c)!=' '
+          blocked=true
+        end
+      end
+    end
+    path
   end
 
   #Gets rid of path if an ally is on it
@@ -275,6 +321,11 @@ class Game
     else
       'not valid piece'
     end
+  end
+
+  def coord_to_piece_type(coord)
+    piece = get_piece(coord)
+    piece_type = get_piece_type(piece)
   end
 
   #Check if current piece matches player color
