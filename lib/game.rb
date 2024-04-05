@@ -17,23 +17,29 @@ class Game
    turn=1
    until checkmate || stalemate
       player = which_player(turn)
-      @board.display(player.color)
+      color=player.color
+      @board.display(color)
       move_prompt(player)
       
       #Makes a move
       old_pos,new_pos=get_move(player)
 
       #Check for promotion
-      promote(old_pos,player.color) if promote?(old_pos,new_pos,player.color)
+      promote(old_pos,color) if promote?(old_pos,new_pos,color)
 
       @board.update(old_pos,new_pos)
 
       ##Check for checkmate
       
-      if check?(player.color)
+      if check?(color)
         puts "Check"
+        #check if king can move
+        #check if some other piece can block
+          #check if still in check -> mate
       end
-      ##Check for stalemate
+
+      
+      stalemate=true if stalemate?(color)
 
       turn+=1
 
@@ -51,9 +57,24 @@ class Game
 
   #See if enemy king is under an attack
   def check?(color)
-    enemy_king= other_king_spot(color)
+    enemy_king = other_king_spot(color)
     enemy_color=other_color(color) 
     guarded?(enemy_king,enemy_color)
+  end
+
+  #Check for stalemate
+  def stalemate?(color)
+    #go through the whole board and find all enemy pieces
+    enemy_color=other_color(color) 
+    enemy_pieces=@board.find_coordinates_all(enemy_color)
+    #if all pieces have no path, stalemate
+    return true if all_cant_move?(enemy_pieces,enemy_color)
+      
+    false
+  end
+
+  def all_cant_move?(pieces,color)
+    pieces.all? {|piece| get_path(piece,color).empty?}
   end
 
   #Return coordinate of enemy king

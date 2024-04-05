@@ -13,6 +13,12 @@ class Board
   def chess_pieces_init
    piece_place('white')
    piece_place('black')
+   #init_test
+  end
+
+  def init_test
+    @game_board[1][4] = " "
+    @game_board[5][4] = WHITE_ROOK
   end
   
   #Fill one side of the board with pieces
@@ -55,8 +61,7 @@ class Board
          @game_board[1][i] = BLACK_PAWN
       end
    end
-   @game_board[1][4] = " "
-   @game_board[5][4] = WHITE_ROOK
+   
   end
 
   #Shows board status with comments and coordinates
@@ -147,5 +152,16 @@ class Board
       return [i, j] if cell == target
     end
   end
+ end
+
+ def find_coordinates_all(color)
+  pieces_color =  (color=='white') ? WHITE_PIECES : BLACK_PIECES
+  coordinates=[]
+  @game_board.each_with_index do |row, i|
+    row.each_with_index do |cell, j|
+      coordinates << [i, j] if pieces_color.include?(cell)
+    end
+  end
+  coordinates
  end
 end
