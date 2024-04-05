@@ -435,11 +435,10 @@ class Game
     case piece_type
     when 'rook', 'bishop', 'queen'
       accepted = remove_blocked_path(accepted, color, coord)
+    when 'pawn'
+      #Pawn can't move forward no matter the color
+      accepted=pawn_block_check(accepted,coord,color)
     end
-
-    #Pawn can't move forward no matter the color
-    piece_type = coord_to_piece_type(coord)
-    accepted=pawn_block_check(accepted,coord,color) if piece_type=='pawn'
 
     accepted
   end
@@ -505,7 +504,19 @@ class Game
   def pawn_block_check(path,coord,color)
     r, c = coord
     r += (color == 'white' ? -1 : 1)
-    path.reject { |spot| spot == [r, c] }
+    path=reject_if_piece(path,r,c)
+    #check two tiles ahead in case pawn is in starting pos
+    r += (color == 'white' ? -1 : 1)
+    if path.include?([r,c])
+      path=reject_if_piece(path,r,c)
+    end
+  end
+
+  def reject_if_piece(path,r,c)
+    path.reject do |spot| 
+      piece=get_piece(spot)
+      piece!=' ' && spot == [r, c] 
+    end
   end
 
   #Checks if coord is within the chess board

@@ -13,12 +13,14 @@ class Board
   def chess_pieces_init
    piece_place('white')
    piece_place('black')
-   #init_test
+   init_test
   end
 
   def init_test
-    @game_board[1][4] = " "
-    @game_board[5][4] = WHITE_ROOK
+    @game_board[4][3] = BLACK_ROOK
+    @game_board[5][2] = BLACK_ROOK
+    @game_board[5][1] = WHITE_PAWN
+
   end
   
   #Fill one side of the board with pieces
