@@ -59,7 +59,9 @@ class Game
   def check?(color)
     enemy_king = other_king_spot(color)
     enemy_color=other_color(color) 
-    guarded?(enemy_king,enemy_color)
+
+    #make sure below is doing intended
+    eye=eyed?(enemy_king,enemy_color)
   end
 
   #Check for stalemate
@@ -73,6 +75,7 @@ class Game
     false
   end
 
+  #Check if every pieces have no path available
   def all_cant_move?(pieces,color)
     pieces.all? {|piece| get_path(piece,color).empty?}
   end
@@ -340,11 +343,11 @@ class Game
 
   #Remove all the king's path that are eyed by enemy pieces
   def remove_guarded(path,color)
-    path.reject {|spot| guarded?(spot,color)}
+    path.reject {|spot| eyed?(spot,color)}
   end
 
-  #Checks if a spot is guarded by enemy pieces
-  def guarded?(spot,color)
+  #Checks if a spot is eyed by enemy pieces
+  def eyed?(spot,color)
     king_eyed?(spot,color) ||
     pawn_eyed?(spot,color) ||
     knight_eyed?(spot,color) ||
@@ -384,8 +387,7 @@ class Game
   #Checks if an enemy bishop eyes over any of the path
   def bishop_eyed?(spot,color)
     dirs=[[1, 1], [-1, -1], [1, -1], [-1, 1]]
-    piece_in_direction?(dirs,spot,color,BISHOP)
-    
+    piece_in_direction?(dirs,spot,color,BISHOP)  
   end
 
   #Checks if an enemy queen eyes over any of the path
@@ -416,7 +418,7 @@ class Game
   def piece_there?(dirs,spot,color,type)
     dirs.each do |dr,dc|
       r,c=spot
-      eyeing_piece=@board.show_coord(r+dr,c+dc)
+      eyeing_piece=@board.show_coord(r+dr,c+dc) if in_bound?([r + dr, c + dc])
       return true if !same_color?(eyeing_piece,color) && type.include?(eyeing_piece)
     end
     false
@@ -442,6 +444,7 @@ class Game
     accepted
   end
 
+  #Get rid of blocked path according to piece type
   def remove_blocked_path(path,color,coord)
     piece_type = coord_to_piece_type(coord)
     case piece_type
@@ -455,21 +458,7 @@ class Game
     path
   end
 
-  def gbp_rook(coord,path)
-    dirs=[[0, 1], [0, -1], [1, 0], [-1, 0]]
-    path=get_blocked_path(dirs,coord,path)
-  end
-  
-  def gbp_bishop(coord,path)
-    dirs=[[1, 1], [-1, -1], [1, -1], [-1, 1]]
-    path=get_blocked_path(dirs,coord,path)
-  end
-
-  def gbp_queen(coord,path)
-    dirs=[[1, 1], [-1, -1], [1, -1], [-1, 1]] + [[0, 1], [0, -1], [1, 0], [-1, 0]]
-    path=get_blocked_path(dirs,coord,path)
-  end
-
+  #If blocked by a piece, get rid of the path beyond it
   def get_blocked_path(dirs,coord,path)
     dirs.each do |dr,dc|
       r,c=coord
@@ -488,6 +477,21 @@ class Game
       end
     end
     path
+  end
+
+  def gbp_rook(coord,path)
+    dirs=[[0, 1], [0, -1], [1, 0], [-1, 0]]
+    path=get_blocked_path(dirs,coord,path)
+  end
+  
+  def gbp_bishop(coord,path)
+    dirs=[[1, 1], [-1, -1], [1, -1], [-1, 1]]
+    path=get_blocked_path(dirs,coord,path)
+  end
+
+  def gbp_queen(coord,path)
+    dirs=[[1, 1], [-1, -1], [1, -1], [-1, 1]] + [[0, 1], [0, -1], [1, 0], [-1, 0]]
+    path=get_blocked_path(dirs,coord,path)
   end
 
   #Gets rid of path if an ally is on it
