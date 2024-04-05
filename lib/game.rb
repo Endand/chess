@@ -24,7 +24,7 @@ class Game
       old_pos,new_pos=get_move(player)
 
       #Check for promotion
-      promote(old_pos) if promote?(old_pos,new_pos,player.color)
+      promote(old_pos,player.color) if promote?(old_pos,new_pos,player.color)
 
       @board.update(old_pos,new_pos)
 
@@ -46,18 +46,49 @@ class Game
    
   end
 
-  #Change the pawn to select piece
-  def promote(pawn_pos)
+  #Change the pawn to select piece (in-place)
+  def promote(pawn_pos,color)
     
     promo_alart
     response= promo_get_response
 
-    ##replace pawn in pawn_pos to select piece according to response
-
+    #replace pawn in pawn_pos to select piece according to response
+    change_pawn(pawn_pos,color,response)
 
     promoted_msg(response)
     
 
+  end
+
+  def change_pawn(pawn_pos,color,response)
+    r,c=pawn_pos
+
+    change_to=''
+    case color
+    when 'white'
+      case response
+      when 'queen'
+        change_to=WHITE_QUEEN
+      when 'rook'
+        change_to=WHITE_ROOK
+      when 'bishop'
+        change_to=WHITE_BISHOP
+      when 'knight'
+        change_to=WHITE_KNIGHT
+      end
+    when 'black'
+      case response
+      when 'queen'
+        change_to=BLACK_QUEEN
+      when 'rook'
+        change_to=BLACK_ROOK
+      when 'bishop'
+        change_to=BLACK_BISHOP
+      when 'knight'
+        change_to=BLACK_KNIGHT
+      end
+    end
+    @board.make_change(r,c,change_to)
   end
 
   #Check the move makes the pawn promotable

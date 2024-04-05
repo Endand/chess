@@ -132,4 +132,8 @@ class Board
  def show_coord(row,col)
   @game_board[row][col]
  end
+
+ def make_change(row,col,change)
+  @game_board[row][col]=change
+ end
 end
