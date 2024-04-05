@@ -35,7 +35,7 @@ class Game
       turn+=1
 
       #test purpose
-      checkmate=true if turn==3
+      checkmate=true if turn==5
    end
 
    if checkmate

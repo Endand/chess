@@ -55,7 +55,6 @@ class Board
          @game_board[1][i] = BLACK_PAWN
       end
    end
-   @game_board[1][1] = WHITE_PAWN
 
   end
 
@@ -126,7 +125,11 @@ class Board
  
  #Takes old and new pos from player and updates the board accordingly
  def update(old_pos,new_pos)
-  puts "Old Pos: #{old_pos} New Pos: #{new_pos}"
+  opr,opc= old_pos
+  npr,npc=new_pos
+  piece= @game_board[opr][opc]
+  @game_board[opr][opc]=" "
+  @game_board[npr][npc]=piece
  end
 
  def show_coord(row,col)
