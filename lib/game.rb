@@ -24,9 +24,7 @@ class Game
       old_pos,new_pos=get_move(player)
 
       #Check for promotion
-      promote if promote?(old_pos,new_pos,player.color)
-
-
+      promote(old_pos) if promote?(old_pos,new_pos,player.color)
 
       @board.update(old_pos,new_pos)
 
@@ -48,9 +46,18 @@ class Game
    
   end
 
-  #Promote the pawn
-  def promote
-    puts "promoted"
+  #Change the pawn to select piece
+  def promote(pawn_pos)
+    
+    promo_alart
+    response= promo_get_response
+
+    ##replace pawn in pawn_pos to select piece according to response
+
+
+    promoted_msg(response)
+    
+
   end
 
   #Check the move makes the pawn promotable
@@ -516,6 +523,35 @@ class Game
   #Converts col num to matching letter
   def int_to_alphabet(col)
     ('A'.ord + col).chr
+  end
+
+  def promo_alart
+    puts "\nYour pawn reached the end of the board.\n"
+  end
+
+  #Asks for which piece to promote
+  def promo_get_response
+    choices=['queen','rook','bishop','knight']
+    promo_select_msg(choices)
+    response=gets.strip.downcase
+    until choices.include?(response)
+      not_valid_promo_piece_msg
+      promo_select_msg(choices)
+      response=gets.strip.downcase
+    end
+    response
+  end
+
+  def promo_select_msg(choices)
+    puts "\nSelect a piece to promote to: #{choices.inspect}\n"
+  end
+
+  def not_valid_promo_piece_msg
+    puts "\nThat is not an option.\n"
+  end
+
+  def promoted_msg(response)
+    puts "\nYour pawn is promoted to a #{response}!\n"
   end
 
 end
