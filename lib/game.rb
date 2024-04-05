@@ -69,9 +69,13 @@ class Game
     # Ensure the input is not empty
     return false if input.empty?
 
-    # Check if the piece is empty or doesn't match the player's color
     piece=get_piece(input)
-    return false if piece==' ' || !same_color?(piece,color)
+    
+    # Check if the piece is empty
+    return false if piece==' ' 
+
+    # Check if the piece doesn't match the player's color
+    return false if !same_color?(piece,color)
 
     #NEED TO ADD A CHECKER FOR NO VALID MOVE CASE
     path = get_path(input,color)
@@ -239,11 +243,11 @@ class Game
     pawn_eyed?(spot,color) ||
     knight_eyed?(spot,color) ||
     rook_eyed?(spot,color) ||
-    bishop_eyed?(spot,color)
-    #rook and bishop covers queen case
+    bishop_eyed?(spot,color) ||
+    queen_eyed?(spot,color)
   end
 
-  #Checks if a enemy pawn eyed over any of the path
+  #Checks if an enemy pawn eyes over any of the path
   def pawn_eyed?(spot,color)
     if color=='white'
       dirs=[[-1,-1],[-1,1]]
@@ -253,25 +257,53 @@ class Game
     piece_there?(dirs,spot,color,PAWN)
   end
 
-  #Checks if a enemy king eyed over any of the path
+  #Checks if an enemy king eyes over any of the path
   def king_eyed?(spot,color)
     dirs=[[-1,-1],[-1,0],[0,1],[-1,1],[1,1],[1,0],[0,-1],[1,-1]] 
     piece_there?(dirs,spot,color,KING)
   end
 
-  #Checks if a enemy knight eyed over any of the path
+  #Checks if an enemy knight eyes over any of the path
   def knight_eyed?(spot,color)
     dirs=[[1, 2], [2, 1], [-1, 2], [-2, 1], [-1, -2], [-2, -1], [1, -2], [2, -1]]
     piece_there?(dirs,spot,color,KNIGHT)
   end
 
-  #Checks if a enemy rook eyed over any of the path
+  #Checks if an enemy rook eyes over any of the path
   def rook_eyed?(spot,color)
-    false
+    dirs=[[0, 1], [0, -1], [1, 0], [-1, 0]]
+    piece_in_direction?(dirs,spot,color,ROOK)
   end
 
-  #Checks if a enemy bishop eyed over any of the path
+  #Checks if an enemy bishop eyes over any of the path
   def bishop_eyed?(spot,color)
+    dirs=[[1, 1], [-1, -1], [1, -1], [-1, 1]]
+    piece_in_direction?(dirs,spot,color,BISHOP)
+    
+  end
+
+  #Checks if an enemy queen eyes over any of the path
+  def queen_eyed?(spot,color)
+    dirs=[[1, 1], [-1, -1], [1, -1], [-1, 1]] + [[0, 1], [0, -1], [1, 0], [-1, 0]]
+    piece_in_direction?(dirs,spot,color,QUEEN)
+  end
+
+  def piece_in_direction?(dirs,spot,color,type)
+    dirs.each do |dr,dc|
+      r,c=spot
+      while in_bound?([r + dr, c + dc])
+        r += dr
+        c += dc
+        eyeing_piece=@board.show_coord(r,c)
+        if eyeing_piece!=" "
+          if !same_color?(eyeing_piece,color) && type.include?(eyeing_piece)
+            return true
+          else
+            break
+          end
+        end
+      end
+    end
     false
   end
 
@@ -367,7 +399,7 @@ class Game
   #Gets the element of the board based on input coordinate
   def get_piece(input)
     row,col=input
-    piece = @board.show_coord(row, col)
+    @board.show_coord(row, col)
   end
 
   #Gets the type of piece
