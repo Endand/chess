@@ -14,12 +14,18 @@ class Game
   def play_round
    checkmate=nil
    stalemate=nil
+   check=false
    turn=1
    until checkmate || stalemate
       player = which_player(turn)
       color=player.color
       @board.display(color)
-      move_prompt(player)
+      if check
+        checked_msg(player.name)
+        check=false
+      else
+        move_prompt(player)
+      end
       
       #Makes a move
       old_pos,new_pos=get_move(player)
@@ -31,7 +37,7 @@ class Game
 
       #Check for checkmate
       if enemy_check?(color)
-        puts "Check"
+        check=true
         #check if king can move
         #check if some other piece can block
           #check if still in check -> mate
@@ -712,6 +718,10 @@ class Game
     puts "\nYour pawn is promoted to a #{response}!\n"
   end
 
+  def checked_msg(name)
+    puts "\n#{name}, you are in check.\n"
+
+  end
   def king_in_check_msg
     puts "\nKing is in check! Select a move to make him safe!\n"
   end
