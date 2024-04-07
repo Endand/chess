@@ -167,10 +167,17 @@ class Game
   def get_old_input(player)
     input=player.choose_old
     until can_select_old?(input, player.color)
-      not_valid_old
+      not_your_color_msg if !match_color?(input,player.color)
+      cannot_move_msg
       input=player.choose_old
     end
     input
+  end
+
+  def match_color?(input,color)
+    piece=get_piece(input)
+    which_color= (color=='white') ? WHITE_PIECES : BLACK_PIECES
+    which_color.include?(piece)
   end
 
   #Check if piece to move exists in the coord and is player's color.
@@ -600,8 +607,12 @@ class Game
     puts "\n#{player.name} your turn.\n"
   end
 
-  def not_valid_old
-    puts "\nPlease select YOUR piece to move that could MOVE.\n"
+  def not_your_color_msg
+    puts "\nPlease select YOUR piece.\n"
+  end
+
+  def cannot_move_msg
+    puts "\nPlease select a piece to move that could MOVE.\n"
   end
   
   def not_valid_new
