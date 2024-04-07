@@ -244,9 +244,9 @@ class Game
     end
 
     #Eliminate blocked path
-    path=reject_blocked(path,color,from)
-
-    path
+    final_path=reject_blocked(path,color,from)
+    
+    final_path
   end
 
   #Gets all possible path a pawn can take
@@ -426,10 +426,8 @@ class Game
 
   #Reduces possible moves if the path is blocked by same colored piece
   def reject_blocked(path,color,coord)
-
     #covers pawn,king,knight
     accepted=no_friendly_fire(path,color)
-
     #covers rook,bishop,queen
     piece_type = coord_to_piece_type(coord)
     case piece_type
@@ -437,10 +435,58 @@ class Game
       accepted = remove_blocked_path(accepted, color, coord)
     when 'pawn'
       #Pawn can't move forward no matter the color
-      accepted=pawn_block_check(accepted,coord,color)
+      accepted = blocked_pawn_path(accepted,coord,color)
     end
 
     accepted
+  end
+
+
+  #Determines if pawn is in start pos according to color
+  def in_start_pos?(color,coord)
+    r,c=coord
+    color=='white' ? r==6 : r==1
+  end
+
+  #Get rid of path if there is a piece blocking its way
+  def blocked_pawn_path(path,coord,color)
+    r, c = coord
+    r += add_by_color(color)
+    #rejects the spot directly in front if applicable
+    if get_piece([r,c])!=' '
+      path=reject_if_piece(path,r,c)
+      #check two tiles ahead in case pawn is in starting pos
+      if in_start_pos?(color,coord)
+        r += add_by_color(color)
+        path=reject_spot(path,r,c)
+        r -= add_by_color(color)
+      end
+    end
+    if in_start_pos?(color,coord)
+      r += add_by_color(color)
+      path=reject_if_piece(path,r,c)
+    end
+    path
+  end
+
+  def add_by_color(color)
+    color == 'white' ? -1 : 1
+  end
+
+  #If there is a piece on the [r,c], reject from path
+  def reject_if_piece(path,r,c)
+    path.reject do |spot| 
+      piece=get_piece(spot)
+      piece!=' ' && spot == [r, c] 
+    end
+  end
+
+  #Does not check if it's empty
+  def reject_spot(path,r,c)
+    path.reject do |spot| 
+      piece=get_piece(spot)
+      spot == [r, c] 
+    end
   end
 
   #Get rid of blocked path according to piece type
@@ -501,23 +547,7 @@ class Game
     end
   end
 
-  def pawn_block_check(path,coord,color)
-    r, c = coord
-    r += (color == 'white' ? -1 : 1)
-    path=reject_if_piece(path,r,c)
-    #check two tiles ahead in case pawn is in starting pos
-    r += (color == 'white' ? -1 : 1)
-    if path.include?([r,c])
-      path=reject_if_piece(path,r,c)
-    end
-  end
-
-  def reject_if_piece(path,r,c)
-    path.reject do |spot| 
-      piece=get_piece(spot)
-      piece!=' ' && spot == [r, c] 
-    end
-  end
+  
 
   #Checks if coord is within the chess board
   def in_bound?(coord)
