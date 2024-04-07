@@ -38,9 +38,9 @@ class Game
       #Check for checkmate
       if enemy_check?(color)
         check=true
-        #check if king can move
-        #check if some other piece can block
-          #check if still in check -> mate
+
+        checkmate=checkmate?(color)
+        
       end
 
       
@@ -58,6 +58,20 @@ class Game
     stalemate_msg
    end
    
+  end
+
+  def checkmate?(color)
+    #check if enemy king can move
+    enemy_king_coord = other_king_spot(color)
+    enemy_color=other_color(color)
+    enemy_king_path = get_path(enemy_king_coord,enemy_color) 
+    if !enemy_king_path.empty?
+      return false
+    else
+      #check if some other piece can block
+        #check if still in check -> mate
+        return true
+    end
   end
 
   def me_check?(color)
