@@ -31,7 +31,7 @@ class Game
 
       ##Check for checkmate
       
-      if check?(color)
+      if enemy_check?(color)
         puts "Check"
         #check if king can move
         #check if some other piece can block
@@ -55,12 +55,22 @@ class Game
    
   end
 
-  #See if enemy king is under an attack
-  def check?(color)
+  def me_check?(color)
+    my_king= my_king_spot(color)
+    eye=eyed?(my_king,color)
+  end
+
+  #Return coordinate of my king
+  def my_king_spot(color)
+    my_king = (color=='white') ? WHITE_KING : BLACK_KING
+    @board.find_coordinate(my_king)
+  end
+  
+  #See if my king is under an attack
+  def enemy_check?(color)
     enemy_king = other_king_spot(color)
     enemy_color=other_color(color) 
 
-    #make sure below is doing intended
     eye=eyed?(enemy_king,enemy_color)
   end
 
@@ -80,11 +90,7 @@ class Game
     pieces.all? {|piece| get_path(piece,color).empty?}
   end
 
-  #Return coordinate of enemy king
-  def other_king_spot(color)
-    enemy_king = (color=='white') ? BLACK_KING : WHITE_KING
-    @board.find_coordinate(enemy_king)
-  end
+  
 
   #Return the opposite color
   def other_color(color)
@@ -197,6 +203,9 @@ class Game
     path = get_path(input,color)
     return false if path.empty?
 
+    #Check if the move makes king in check
+    return false if !king_safe?(input,color)
+
     # If all conditions are met, return true
     true
   end
@@ -251,9 +260,19 @@ class Game
     end
 
     #Eliminate blocked path
-    final_path=reject_blocked(path,color,from)
-    
-    final_path
+    not_blocked_path=reject_blocked(path,color,from)
+
+    not_blocked_path
+  end
+
+  #Check if moving the piece puts king into check
+  def king_safe?(from,color)
+      row,col=from
+      piece =  get_piece(from)
+      @board.make_change(row,col," ")
+      in_check = me_check?(color)
+      @board.make_change(row,col,piece)
+      !in_check
   end
 
   #Gets all possible path a pawn can take

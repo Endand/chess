@@ -18,8 +18,7 @@ class Board
 
   def init_test
 
-    @game_board[5][2] = BLACK_ROOK
-    
+    @game_board[5][2] = BLACK_BISHOP
 
   end
   
