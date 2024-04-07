@@ -74,9 +74,9 @@ class Game
   end
 
   #Return coordinate of enemy king
-  def my_king_spot(color)
-    my_king = (color=='white') ? BLACK_KING : WHITE_KING
-    @board.find_coordinate(my_king)
+  def other_king_spot(color)
+    enemy_king = (color=='white') ? BLACK_KING : WHITE_KING
+    @board.find_coordinate(enemy_king)
   end
 
   #Check for stalemate
@@ -280,7 +280,6 @@ class Game
       from_piece =  get_piece(from)
       @board.make_change(rf,cf," ")
       @board.make_change(rt,ct,from_piece)
-      @board.display(color)
       in_check = me_check?(color)
       @board.make_change(rf,cf,from_piece)
       !in_check
