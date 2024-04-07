@@ -14,9 +14,7 @@ Chess is a classic two-player strategy game played on an 8x8 grid called a chess
 
 4. **Stalemate**: If a player is not in check but has no legal moves, the game is a stalemate, resulting in a draw.
 
-5. **Special Moves**: Castling is a special move involving the king and one of the rooks. It allows both pieces to move simultaneously under certain conditions. En passant is a pawn capture that can occur when a pawn moves two squares forward from its starting position and lands next to an opponent's pawn.
-
-6. **Pawn Promotion**: When a pawn reaches the opposite end of the board, it can be promoted to any other piece except a king. This is usually to a queen, as it is the most powerful piece.
+5. **Pawn Promotion**: When a pawn reaches the opposite end of the board, it can be promoted to any other piece except a king. This is usually to a queen, as it is the most powerful piece.
 
 ## Implementation Details
 
