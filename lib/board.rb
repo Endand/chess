@@ -18,8 +18,12 @@ class Board
 
   def init_test
 
-    @game_board[5][3] = WHITE_ROOK
+    @game_board[4][3] = WHITE_QUEEN
+    @game_board[3][3] = WHITE_QUEEN
+    @game_board[5][3] = WHITE_QUEEN
     @game_board[1][4] = " "
+    @game_board[0][3] = " "
+    @game_board[0][6] = " "
     
 
   end

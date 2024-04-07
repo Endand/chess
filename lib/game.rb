@@ -44,18 +44,19 @@ class Game
       end
 
       
-      stalemate=true if stalemate?(color)
+      stalemate=true if !check && stalemate?(color)
 
       turn+=1
 
-      #test purpose
-      checkmate=true if turn==5
    end
 
-   if checkmate
-    checkmate_msg(player)
-   elsif stalemate
-    stalemate_msg
+   if checkmate || stalemate
+    @board.display(color)
+    if checkmate
+      checkmate_msg(player)
+    elsif stalemate
+      stalemate_msg
+    end
    end
    
   end
@@ -68,10 +69,45 @@ class Game
     if !enemy_king_path.empty?
       return false
     else
-      #check if some other piece can block
-        #check if still in check -> mate
-        return true
+      #check if some other piece can block; if not->mate
+      enemy_pieces=@board.find_coordinates_all(enemy_color)
+      if all_cant_move?(enemy_pieces,enemy_color)
+        return true 
+      else
+        #check if still in check after making all poss moves-> mate
+        return double_check?(enemy_pieces,enemy_color)
+      end
+        
     end
+    false
+  end
+
+  def double_check?(pieces,color)
+    
+    #get all the pieces that can move
+    with_path=get_pieces_with_path(pieces,color)
+    #get all the moves that block the check
+    candidate_moves=get_uncheck_move(with_path,color)
+
+    #if no candidate_moves, there are no moves available 
+    #that can block the check or get the king out of check
+    return candidate_moves.empty?
+    
+  end
+
+  def get_uncheck_move(with_path,color)
+    candidate_moves=[]
+    with_path.each do |piece|
+      piece_path=get_path(piece,color)
+      piece_path.each do |path|
+        candidate_moves << [piece,path] if king_safe?(piece,path,color)
+      end
+    end
+    candidate_moves
+  end
+
+  def get_pieces_with_path(pieces,color)
+    pieces.reject {|piece| get_path(piece,color).empty?}
   end
 
   def me_check?(color)
@@ -298,10 +334,17 @@ class Game
       rf,cf=from
       rt,ct=to
       from_piece =  get_piece(from)
+      to_piece =  get_piece(to)
+      
+      #modify board just to check
       @board.make_change(rf,cf," ")
       @board.make_change(rt,ct,from_piece)
       in_check = me_check?(color)
+
+      #restore board to normal
       @board.make_change(rf,cf,from_piece)
+      @board.make_change(rt,ct,to_piece)
+
       !in_check
   end
 
