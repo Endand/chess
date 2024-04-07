@@ -29,8 +29,7 @@ class Game
 
       @board.update(old_pos,new_pos)
 
-      ##Check for checkmate
-      
+      #Check for checkmate
       if enemy_check?(color)
         puts "Check"
         #check if king can move
@@ -72,6 +71,12 @@ class Game
     enemy_color=other_color(color) 
 
     eye=eyed?(enemy_king,enemy_color)
+  end
+
+  #Return coordinate of enemy king
+  def my_king_spot(color)
+    my_king = (color=='white') ? BLACK_KING : WHITE_KING
+    @board.find_coordinate(my_king)
   end
 
   #Check for stalemate
@@ -164,8 +169,13 @@ class Game
 
   #Take inputs from player for start and end position
   def get_move(player)
-    old_pos=get_old_input(player)
-    new_pos=get_new_input(player,old_pos)
+    old_pos,new_pos=[],[]
+    #Check if the move makes king in check
+    until king_safe?(old_pos,new_pos,player.color)
+      old_pos=get_old_input(player)
+      new_pos=get_new_input(player,old_pos)
+      king_in_check_msg if !king_safe?(old_pos,new_pos,player.color)
+    end
     [old_pos,new_pos]
   end
 
@@ -202,9 +212,6 @@ class Game
     #NEED TO ADD A CHECKER FOR NO VALID MOVE CASE
     path = get_path(input,color)
     return false if path.empty?
-
-    #Check if the move makes king in check
-    return false if !king_safe?(input,color)
 
     # If all conditions are met, return true
     true
@@ -266,12 +273,16 @@ class Game
   end
 
   #Check if moving the piece puts king into check
-  def king_safe?(from,color)
-      row,col=from
-      piece =  get_piece(from)
-      @board.make_change(row,col," ")
+  def king_safe?(from,to,color)
+    return false if from.empty? || to.empty?
+      rf,cf=from
+      rt,ct=to
+      from_piece =  get_piece(from)
+      @board.make_change(rf,cf," ")
+      @board.make_change(rt,ct,from_piece)
+      @board.display(color)
       in_check = me_check?(color)
-      @board.make_change(row,col,piece)
+      @board.make_change(rf,cf,from_piece)
       !in_check
   end
 
@@ -700,6 +711,10 @@ class Game
 
   def promoted_msg(response)
     puts "\nYour pawn is promoted to a #{response}!\n"
+  end
+
+  def king_in_check_msg
+    puts "\nKing is in check! Select a move to make him safe!\n"
   end
 
 end
