@@ -1,10 +1,10 @@
 # Chess Game
 
-### Overview
+## Overview
 
 Chess is a classic two-player strategy game played on an 8x8 grid called a chessboard. Each player starts with 16 pieces: one king, one queen, two rooks, two knights, two bishops, and eight pawns. The objective is to checkmate the opponent's king, putting it in a position where it is under immediate attack and cannot escape.
 
-### Rules
+## Rules
 
 1. **Movement**: Each type of chess piece moves in a specific way. The king moves one square in any direction, while the queen can move any number of squares diagonally, horizontally, or vertically. Rooks move any number of squares horizontally or vertically, bishops move diagonally, and knights move in an L-shape pattern. Pawns move forward one square, but can optionally move two squares on their first move and capture diagonally.
 
